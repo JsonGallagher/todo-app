@@ -53,12 +53,20 @@ const renderTodos = function (todos, filters) {
 // Initial rendering of notes
 renderTodos(todos, filters);
 
-// Listen for new todo creation
-document.querySelector('#add-todo').addEventListener('click', function(e) {
-    console.log('Add a new todo');
-});
+// Form Event Handler
+document.querySelector('#new-todo').addEventListener('submit', function (e) {
+    // Prevent default form action - full page refresh
+    e.preventDefault();
 
-// Listen for todo text input changes
-document.querySelector('#new-todo').addEventListener('input', function(e) {
-    console.log(e.target.value);
+    // add new object to array containing todo text, assume completed: false
+    todos.push({
+        text: e.target.elements.todoText.value,
+        completed: false
+    });
+
+    // add new todo in div to display onscreen
+    renderTodos(todos, filters);
+
+    // clear form input value
+    e.target.elements.todoText.value = '';
 })
