@@ -1,27 +1,17 @@
-const todos = [{
-    text: 'Order cat food',
-    completed: true
-}, {
-    text: 'Clean kitchen',
-    completed: false
-}, {
-    text: 'Buy food',
-    completed: true
-},{
-    text: 'Do work',
-    completed: false
-}, {    
-    text: 'Exercise',
-    completed: true
-}];
+let todos = [];
 
 const filters = {
     searchText: '',
     hideCompleted: false
 }
 
-// 1. Set up a div container for todos - DONE
-// 2. Setup filters (searchText) - DONE
+// Check for existing saved data
+const todosJSON = localStorage.getItem('todos');
+
+if (todosJSON !== null) {
+    todos = JSON.parse(todosJSON);
+}
+
 // 3. Wire up a new filter input to change it
 document.querySelector('#search-text').addEventListener('input' , function (e) {
     filters.searchText = e.target.value;
@@ -52,9 +42,13 @@ const renderTodos = function (todos, filters) {
 
     // Print a p for each todo above (use text value of the object as the visible value of the object)
     filteredTodos.forEach(function (todo){
-    const p = document.createElement('p');
-    p.textContent = todo.text;
-    document.querySelector('#todos').appendChild(p);
+        const todoEl = document.createElement('p');
+        if (todo.text.length > 0) {
+            todoEl.textContent = todo.text;
+        } else {
+            todoEl.textContent = 'Unnamed Note';
+        }
+        document.querySelector('#todos').appendChild(todoEl);
     })
 }
 // Initial rendering of notes
@@ -65,24 +59,21 @@ document.querySelector('#new-todo').addEventListener('submit', function (e) {
     // Prevent default form action - full page refresh
     e.preventDefault();
 
-    // add new object to array containing todo text, assume completed: false
+    // Add new object to array containing todo text, assume completed: false
     todos.push({
         text: e.target.elements.todoText.value,
         completed: false
     });
-
-    // add new todo in div to display onscreen
+   
+    localStorage.setItem('todos', JSON.stringify(todos));
+    // Add new todo in div to display onscreen
     renderTodos(todos, filters);
 
-    // clear form input value
+    // Clear form input value
     e.target.elements.todoText.value = '';
 })
 
-// 1. Create a checkbox and setup event listener -> "Hide completed"
-// 2. Create new hideCompleted filter above (default false)
-// 3. Update hideCompleted and rerender list on checkbox change
 document.querySelector('#hide-completed').addEventListener('change', function (e) {
     filters.hideCompleted = e.target.checked;
     renderTodos(todos, filters);
 })
-// 4. Setup renderTodos to remove completed items
